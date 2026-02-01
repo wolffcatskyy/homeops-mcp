@@ -7,8 +7,6 @@
 
 A Model Context Protocol (MCP) server for home infrastructure management. Provides a unified API for Docker, Emby, and future Servarr/UniFi/CrowdSec integrations.
 
-**Built by [wolffcatskyy](https://github.com/wolffcatskyy), [Microsoft Copilot](https://copilot.microsoft.com), and [Claude](https://claude.ai).**
-
 ---
 
 ### We've Reinvented Contributing
@@ -144,6 +142,10 @@ docker build -t homeops-mcp .
 ```
 
 ---
+
+## Acknowledgments
+
+Built with [Microsoft Copilot](https://copilot.microsoft.com) and [Claude](https://claude.ai).
 
 ## License
 
