@@ -7,7 +7,7 @@ the ``X-API-Key`` HTTP header.
 
 from __future__ import annotations
 
-from fastapi import Depends, HTTPException, Security
+from fastapi import HTTPException, Security
 from fastapi.security import APIKeyHeader
 
 from homeops_mcp.config import settings
