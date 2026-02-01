@@ -11,6 +11,18 @@ A Model Context Protocol (MCP) server for home infrastructure management. Provid
 
 ---
 
+### We've Reinvented Contributing
+
+Every issue in this repo is **AI-Ready** — structured with full context, file paths, implementation guides, acceptance criteria, and a ready-to-use AI prompt at the bottom.
+
+**Pick an issue. Copy the prompt. Paste into your AI tool. Submit a PR.**
+
+No codebase knowledge required. No onboarding docs to read. Just pick an issue and go.
+
+[**Browse Issues →**](https://github.com/wolffcatskyy/homeops-mcp/issues)
+
+---
+
 ## Roadmap
 
 | Phase | Scope | Status |
@@ -130,12 +142,6 @@ poetry run pytest -v
 # Build Docker image
 docker build -t homeops-mcp .
 ```
-
----
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ---
 
