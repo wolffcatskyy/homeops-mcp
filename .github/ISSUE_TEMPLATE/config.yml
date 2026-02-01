@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: AI-Ready Issues Standard
+    url: https://github.com/wolffcatskyy/ai-ready-issues
+    about: Learn about our structured issue template format designed for both human and AI contributors.

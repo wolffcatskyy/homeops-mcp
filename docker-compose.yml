@@ -1,0 +1,16 @@
+services:
+  homeops-mcp:
+    build: .
+    container_name: homeops-mcp
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: 5m
+        max-file: "2"

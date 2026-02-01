@@ -1,0 +1,67 @@
+name: Bug Report
+description: Report a bug in HomeOps MCP
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! Please fill out the sections below so we can reproduce and fix it.
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: What happened? What did you expect to happen?
+      placeholder: "When I call GET /v1/docker/containers with a valid API key, I get a 500 error instead of the container list."
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Minimal steps to trigger the bug.
+      placeholder: |
+        1. Start the server with `docker compose up -d`
+        2. Run `curl -H 'X-API-Key: mykey' http://localhost:8000/v1/docker/containers`
+        3. Observe 500 response
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - Low -- cosmetic or minor inconvenience
+        - Medium -- feature degraded but workaround exists
+        - High -- feature broken, no workaround
+        - Critical -- data loss or security issue
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python version, Docker version, deployment method.
+      placeholder: |
+        - OS: Ubuntu 24.04
+        - Python: 3.11.8
+        - Docker: 27.0.3
+        - Deployment: docker compose
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Logs
+      description: Paste any error output or log lines.
+      render: shell
+    validations:
+      required: false
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: How will we know this bug is fixed?
+      placeholder: "GET /v1/docker/containers returns 200 with a JSON array of containers."
+    validations:
+      required: false

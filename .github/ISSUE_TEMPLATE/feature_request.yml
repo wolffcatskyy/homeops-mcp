@@ -1,0 +1,58 @@
+name: Feature Request
+description: Suggest a new feature or enhancement for HomeOps MCP
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the feature idea! Please describe what you'd like and why.
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Description
+      description: What should the feature do?
+      placeholder: "Add a /v1/crowdsec/decisions endpoint that returns active CrowdSec ban decisions."
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - Nice to have
+        - Important -- improves workflow significantly
+        - Critical -- blocking other work
+    validations:
+      required: true
+  - type: textarea
+    id: where
+    attributes:
+      label: Where in the Code
+      description: Which files, modules, or adapters would this touch?
+      placeholder: |
+        - New file: homeops_mcp/adapters/crowdsec_adapter.py
+        - Modified: homeops_mcp/api/routes.py (add new route)
+        - New test: tests/test_crowdsec_adapter.py
+    validations:
+      required: false
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints and Security Notes
+      description: Any security, performance, or compatibility constraints?
+      placeholder: "Must not expose CrowdSec LAPI key in responses. Read-only access only."
+    validations:
+      required: false
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: How will we know this feature is complete?
+      placeholder: |
+        - [ ] New adapter with mock fallback
+        - [ ] Route returns 200 with decision list
+        - [ ] Unit tests pass
+        - [ ] README updated
+    validations:
+      required: false

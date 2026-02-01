@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "homeops-mcp"
+version = "0.1.0"
+description = "MCP server for home infrastructure management"
+authors = ["wolffcatskyy"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "homeops_mcp"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.0"
+uvicorn = {extras = ["standard"], version = "^0.34.0"}
+httpx = "^0.28.0"
+pydantic = "^2.10.0"
+pydantic-settings = "^2.7.0"
+python-dotenv = "^1.0.0"
+structlog = "^24.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+pytest-asyncio = "^0.25.0"
+ruff = "^0.9.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
