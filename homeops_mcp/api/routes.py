@@ -16,6 +16,7 @@ from pydantic import BaseModel
 from homeops_mcp import __version__
 from homeops_mcp.adapters.docker_adapter import DockerAdapter
 from homeops_mcp.adapters.emby_adapter import EmbyAdapter
+from homeops_mcp.adapters.network_adapter import NetworkAdapter
 from homeops_mcp.auth import require_admin_key
 from homeops_mcp.config import settings
 
@@ -28,6 +29,7 @@ router = APIRouter()
 # ---------------------------------------------------------------------------
 _docker = DockerAdapter(socket_path=settings.DOCKER_SOCKET)
 _emby = EmbyAdapter(base_url=settings.EMBY_URL, api_key=settings.EMBY_API_KEY)
+_network = NetworkAdapter(mock_mode=False)
 
 
 # ---------------------------------------------------------------------------
@@ -126,6 +128,66 @@ async def emby_search(
         A list of matching media items.
     """
     return await _emby.search_media(q)
+
+
+# ---------------------------------------------------------------------------
+# Network
+# ---------------------------------------------------------------------------
+
+@router.get("/v1/network/ping", tags=["network"])
+async def network_ping(
+    host: str = Query(..., description="Host to ping"),
+    count: int = Query(4, ge=1, le=20, description="Number of packets"),
+    _key: str = Depends(require_admin_key),
+) -> dict:
+    """Ping a host and return latency statistics.
+
+    Parameters:
+        host: Hostname or IP address to ping.
+        count: Number of packets to send (1--20).
+
+    Returns:
+        A dict with latency stats and packet loss information.
+    """
+    return await _network.ping(host, count)
+
+
+@router.get("/v1/network/dns", tags=["network"])
+async def network_dns(
+    hostname: str = Query(..., description="Hostname to resolve"),
+    record_type: str = Query("A", description="DNS record type"),
+    _key: str = Depends(require_admin_key),
+) -> dict:
+    """Resolve a hostname to IP addresses.
+
+    Parameters:
+        hostname: The hostname to look up.
+        record_type: DNS record type (e.g. A, AAAA).
+
+    Returns:
+        A dict with hostname, record_type, and resolved addresses.
+    """
+    return await _network.dns_lookup(hostname, record_type)
+
+
+@router.get("/v1/network/traceroute", tags=["network"])
+async def network_traceroute(
+    host: str = Query(..., description="Host to trace"),
+    max_hops: int = Query(
+        20, ge=1, le=64, description="Maximum number of hops"
+    ),
+    _key: str = Depends(require_admin_key),
+) -> dict:
+    """Trace the network route to a host.
+
+    Parameters:
+        host: Hostname or IP address to trace.
+        max_hops: Maximum number of hops (1--64).
+
+    Returns:
+        A dict with hop-by-hop routing information.
+    """
+    return await _network.traceroute(host, max_hops)
 
 
 # ---------------------------------------------------------------------------
