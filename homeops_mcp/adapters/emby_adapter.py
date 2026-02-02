@@ -107,6 +107,46 @@ class EmbyAdapter:
         return self._mock_search(query)
 
     # ------------------------------------------------------------------
+    # Library scan
+    # ------------------------------------------------------------------
+
+    async def scan_library(self) -> dict:
+        """Trigger a library scan on the Emby server.
+
+        Returns:
+            A dict with ``status`` and ``message`` keys.
+        """
+        if self.base_url and self.api_key:
+            try:
+                url = f"{self.base_url}/emby/Library/Refresh"
+                resp = await self._client.post(
+                    url,
+                    params={"api_key": self.api_key},
+                )
+                resp.raise_for_status()
+                return {
+                    "status": "started",
+                    "message": "Library scan initiated.",
+                }
+            except httpx.HTTPStatusError as exc:
+                await logger.awarning(
+                    "emby_scan_http_error",
+                    status_code=exc.response.status_code,
+                    detail=str(exc),
+                )
+            except httpx.RequestError as exc:
+                await logger.awarning(
+                    "emby_scan_request_error",
+                    detail=str(exc),
+                )
+
+        # Fallback mock response.
+        return {
+            "status": "started",
+            "message": "Library scan initiated (mock).",
+        }
+
+    # ------------------------------------------------------------------
     # Lifecycle
     # ------------------------------------------------------------------
 

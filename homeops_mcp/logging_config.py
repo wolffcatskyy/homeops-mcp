@@ -73,4 +73,19 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             status_code=response.status_code,
             duration_ms=duration_ms,
         )
+
+        # Record Prometheus metrics (additive, does not replace logging).
+        from homeops_mcp.metrics import REQUEST_COUNT, REQUEST_DURATION
+
+        endpoint = request.url.path
+        REQUEST_COUNT.labels(
+            method=request.method,
+            endpoint=endpoint,
+            status_code=str(response.status_code),
+        ).inc()
+        REQUEST_DURATION.labels(
+            method=request.method,
+            endpoint=endpoint,
+        ).observe(duration_ms / 1000.0)
+
         return response
