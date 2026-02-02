@@ -7,7 +7,9 @@ monitoring tools can probe liveness without credentials.
 
 from __future__ import annotations
 
-from typing import Any
+import asyncio
+import time
+from typing import Any, Callable
 
 import structlog
 from fastapi import APIRouter, Depends, Query
@@ -58,6 +60,105 @@ async def health_check() -> dict[str, str]:
         A JSON object with ``status`` and ``version`` fields.
     """
     return {"status": "ok", "version": __version__}
+
+
+# ---------------------------------------------------------------------------
+# Service health dashboard
+# ---------------------------------------------------------------------------
+
+async def _check_adapter(
+    name: str,
+    probe: Callable[..., Any],
+    timeout: float,
+) -> dict:
+    """Probe a single adapter and return its status.
+
+    Parameters:
+        name: Human-readable service name (for logging).
+        probe: An async callable that exercises the adapter.
+        timeout: Maximum seconds to wait.
+
+    Returns:
+        A dict with ``status`` (``up`` or ``down``) and ``latency_ms``.
+    """
+    start = time.perf_counter()
+    try:
+        await asyncio.wait_for(probe(), timeout=timeout)
+        latency_ms = round(
+            (time.perf_counter() - start) * 1000, 2
+        )
+        return {"status": "up", "latency_ms": latency_ms}
+    except asyncio.TimeoutError:
+        await logger.awarning(
+            "health_check_timeout", service=name
+        )
+        return {"status": "down", "error": "timeout"}
+    except Exception as exc:
+        await logger.awarning(
+            "health_check_failed",
+            service=name,
+            error=str(exc),
+        )
+        latency_ms = round(
+            (time.perf_counter() - start) * 1000, 2
+        )
+        return {
+            "status": "down",
+            "latency_ms": latency_ms,
+            "error": str(exc),
+        }
+
+
+@router.get("/v1/status", tags=["health"])
+async def service_status(
+    _key: str = Depends(require_admin_key),
+) -> dict:
+    """Aggregated health check across all configured adapters.
+
+    Probes Docker, Emby, and any future adapters.  Returns per-service
+    status with latency and an overall health summary.
+
+    Returns:
+        A dict with overall status, timestamp, version, and per-service
+        health information.
+    """
+    from datetime import datetime, timezone
+
+    checks: dict[str, dict] = {}
+    timeout_seconds = 5.0
+
+    # --- Docker check ---
+    checks["docker"] = await _check_adapter(
+        name="docker",
+        probe=_docker.list_containers,
+        timeout=timeout_seconds,
+    )
+
+    # --- Emby check ---
+    if settings.EMBY_URL:
+        checks["emby"] = await _check_adapter(
+            name="emby",
+            probe=_emby.get_active_sessions,
+            timeout=timeout_seconds,
+        )
+    else:
+        checks["emby"] = {"status": "unconfigured"}
+
+    # --- Determine overall status ---
+    statuses = [c["status"] for c in checks.values()]
+    if all(s in ("up", "unconfigured") for s in statuses):
+        overall = "healthy"
+    elif any(s == "up" for s in statuses):
+        overall = "degraded"
+    else:
+        overall = "unhealthy"
+
+    return {
+        "overall": overall,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "version": __version__,
+        "services": checks,
+    }
 
 
 # ---------------------------------------------------------------------------
