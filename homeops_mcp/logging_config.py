@@ -2,7 +2,8 @@
 
 Provides ``setup_logging`` to initialise structlog with JSON output and a
 lightweight ASGI middleware class that logs every HTTP request with method,
-path, status code, and duration.
+path, status code, and duration.  Also records Prometheus metrics for each
+request.
 """
 
 from __future__ import annotations
@@ -48,6 +49,8 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
     - ``path``: Request path
     - ``status_code``: Response status code
     - ``duration_ms``: Round-trip time in milliseconds
+
+    Also records Prometheus metrics (request count and duration histogram).
     """
 
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
@@ -73,4 +76,19 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             status_code=response.status_code,
             duration_ms=duration_ms,
         )
+
+        # Record Prometheus metrics (additive, does not replace logging).
+        from homeops_mcp.metrics import REQUEST_COUNT, REQUEST_DURATION
+
+        endpoint = request.url.path
+        REQUEST_COUNT.labels(
+            method=request.method,
+            endpoint=endpoint,
+            status_code=str(response.status_code),
+        ).inc()
+        REQUEST_DURATION.labels(
+            method=request.method,
+            endpoint=endpoint,
+        ).observe(duration_ms / 1000.0)
+
         return response

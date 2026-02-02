@@ -1,8 +1,8 @@
 """API route definitions for the HomeOps MCP Server.
 
 All ``/v1/`` endpoints require a valid ``X-API-Key`` header.  The
-``/health`` endpoint is unauthenticated so that load-balancers and
-monitoring tools can probe liveness without credentials.
+``/health`` and ``/metrics`` endpoints are unauthenticated so that
+load-balancers and monitoring tools can probe without credentials.
 """
 
 from __future__ import annotations
@@ -11,7 +11,9 @@ from typing import Any
 
 import structlog
 from fastapi import APIRouter, Depends, Query
+from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from pydantic import BaseModel
+from starlette.responses import Response as StarletteResponse
 
 from homeops_mcp import __version__
 from homeops_mcp.adapters.docker_adapter import DockerAdapter
@@ -58,6 +60,25 @@ async def health_check() -> dict[str, str]:
         A JSON object with ``status`` and ``version`` fields.
     """
     return {"status": "ok", "version": __version__}
+
+
+# ---------------------------------------------------------------------------
+# Prometheus metrics
+# ---------------------------------------------------------------------------
+
+@router.get("/metrics", tags=["monitoring"])
+async def prometheus_metrics() -> StarletteResponse:
+    """Prometheus metrics endpoint.
+
+    Unauthenticated so that Prometheus can scrape without an API key.
+
+    Returns:
+        Metrics in Prometheus text exposition format.
+    """
+    return StarletteResponse(
+        content=generate_latest(),
+        media_type=CONTENT_TYPE_LATEST,
+    )
 
 
 # ---------------------------------------------------------------------------
