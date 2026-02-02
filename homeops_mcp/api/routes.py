@@ -14,6 +14,7 @@ from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
 
 from homeops_mcp import __version__
+from homeops_mcp.adapters.crowdsec_adapter import CrowdSecAdapter
 from homeops_mcp.adapters.docker_adapter import DockerAdapter
 from homeops_mcp.adapters.emby_adapter import EmbyAdapter
 from homeops_mcp.auth import require_admin_key
@@ -26,6 +27,10 @@ router = APIRouter()
 # ---------------------------------------------------------------------------
 # Adapter singletons (created once at import time)
 # ---------------------------------------------------------------------------
+_crowdsec = CrowdSecAdapter(
+    base_url=settings.CROWDSEC_URL,
+    api_key=settings.CROWDSEC_API_KEY,
+)
 _docker = DockerAdapter(socket_path=settings.DOCKER_SOCKET)
 _emby = EmbyAdapter(base_url=settings.EMBY_URL, api_key=settings.EMBY_API_KEY)
 
@@ -126,6 +131,54 @@ async def emby_search(
         A list of matching media items.
     """
     return await _emby.search_media(q)
+
+
+# ---------------------------------------------------------------------------
+# CrowdSec
+# ---------------------------------------------------------------------------
+
+@router.get("/v1/crowdsec/decisions", tags=["crowdsec"])
+async def crowdsec_decisions(
+    _key: str = Depends(require_admin_key),
+) -> list[dict]:
+    """List active CrowdSec ban/captcha decisions.
+
+    Requires a valid admin API key.
+
+    Returns:
+        A list of decision dicts with id, type, scope, value, and scenario.
+    """
+    return await _crowdsec.get_decisions()
+
+
+@router.get("/v1/crowdsec/bouncers", tags=["crowdsec"])
+async def crowdsec_bouncers(
+    _key: str = Depends(require_admin_key),
+) -> list[dict]:
+    """List registered CrowdSec bouncers and their last heartbeat.
+
+    Requires a valid admin API key.
+
+    Returns:
+        A list of bouncer dicts with name, ip_address, type, and last_pull.
+    """
+    return await _crowdsec.get_bouncers()
+
+
+@router.get("/v1/crowdsec/alerts", tags=["crowdsec"])
+async def crowdsec_alerts(
+    since_hours: int = Query(24, ge=1, description="Hours to look back"),
+    _key: str = Depends(require_admin_key),
+) -> list[dict]:
+    """List recent CrowdSec alerts.
+
+    Parameters:
+        since_hours: Number of hours to look back (default 24).
+
+    Returns:
+        A list of alert dicts with scenario, source_ip, and timestamp.
+    """
+    return await _crowdsec.get_alerts(since_hours=since_hours)
 
 
 # ---------------------------------------------------------------------------

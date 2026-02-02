@@ -17,6 +17,8 @@ class Settings(BaseSettings):
         MCP_ADMIN_KEY: Shared secret used to authenticate API requests.
         EMBY_URL: Base URL of the Emby Media Server (e.g. http://nas:8096).
         EMBY_API_KEY: API key for authenticating with the Emby server.
+        CROWDSEC_URL: Base URL of the CrowdSec LAPI (e.g. http://localhost:8080).
+        CROWDSEC_API_KEY: CrowdSec bouncer API key.
         DOCKER_SOCKET: Path to the Docker daemon socket.
         LOG_LEVEL: Minimum log level (DEBUG, INFO, WARNING, ERROR, CRITICAL).
     """
@@ -26,6 +28,8 @@ class Settings(BaseSettings):
     MCP_ADMIN_KEY: str = "changeme"
     EMBY_URL: str | None = None
     EMBY_API_KEY: str | None = None
+    CROWDSEC_URL: str | None = None
+    CROWDSEC_API_KEY: str | None = None
     DOCKER_SOCKET: str = "unix:///var/run/docker.sock"
     LOG_LEVEL: str = "INFO"
 
