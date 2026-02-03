@@ -10,21 +10,7 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![CI](https://img.shields.io/github/actions/workflow/status/wolffcatskyy/homeops-mcp/ci.yml?branch=main&label=CI)
 
-A Model Context Protocol (MCP) server for home infrastructure management. Provides a unified API for Docker, Emby, and future Servarr/UniFi/CrowdSec integrations.
-
----
-
-### We've Reinvented Contributing
-
-Every issue in this repo is **AI-Ready** — structured with full context, file paths, implementation guides, acceptance criteria, and a ready-to-use AI prompt at the bottom.
-
-**Pick an issue. Copy the prompt. Paste into your AI tool. Submit a PR.**
-
-No codebase knowledge required. No onboarding docs to read. Just pick an issue and go.
-
-[**Browse Issues →**](https://github.com/wolffcatskyy/homeops-mcp/issues)
-
----
+A Model Context Protocol (MCP) server for home infrastructure management. Provides a unified API for Docker, Emby, and future Servarr/UniFi/CrowdSec integrations. Built with FastAPI and Python 3.11 for homelab automation with Claude.
 
 ## Roadmap
 
@@ -148,9 +134,11 @@ docker build -t homeops-mcp .
 
 ---
 
-## Acknowledgments
+## Contributing
 
-Built with [Microsoft Copilot](https://copilot.microsoft.com) and [Claude](https://claude.ai).
+Every issue in this repo is **AI-Ready** — structured with full context, file paths, implementation guides, and a ready-to-use AI prompt.
+
+[**Browse Issues →**](https://github.com/wolffcatskyy/homeops-mcp/issues)
 
 ## License
 
