@@ -1,5 +1,10 @@
 # HomeOps MCP Server
 
+---
+**Note:** This project was developed with and is supported exclusively by AI. There is no human support — issues and PRs are triaged and responded to by AI agents. If AI-assisted software isn't for you, no hard feelings — but you might want to reconsider, since so is most of the software you already use.
+
+---
+
 ![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-green.svg)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
