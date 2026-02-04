@@ -16,6 +16,11 @@ pydantic = "^2.10.0"
 pydantic-settings = "^2.7.0"
 python-dotenv = "^1.0.0"
 structlog = "^24.0.0"
+prometheus-client = "^0.21.0"
+mcp = ">=1.2.0,<2"
+
+[tool.poetry.scripts]
+homeops-mcp = "homeops_mcp.main:_run_stdio"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"

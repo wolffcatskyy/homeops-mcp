@@ -52,6 +52,44 @@ class DockerAdapter:
             },
         ]
 
+    async def restart_container(self, container_name: str) -> dict:
+        """Restart a container by name.
+
+        Parameters:
+            container_name: The name of the container to restart.
+
+        Returns:
+            A dict with ``container_name`` and ``status`` keys.
+        """
+        # TODO: Replace mock data with real Docker socket implementation.
+        #       Use POST /containers/{name}/restart over the unix socket.
+        return {
+            "container_name": container_name,
+            "status": "restarted",
+            "message": f"Container '{container_name}' restart simulated (mock).",
+        }
+
+    async def get_logs(self, container_name: str, tail: int = 50) -> dict:
+        """Return recent log lines from a container.
+
+        Parameters:
+            container_name: The name of the container.
+            tail: Number of log lines to return.
+
+        Returns:
+            A dict with ``container_name``, ``tail``, and ``logs`` keys.
+        """
+        # TODO: Replace mock data with real Docker socket implementation.
+        #       Use GET /containers/{name}/logs?tail={n} over the unix socket.
+        return {
+            "container_name": container_name,
+            "tail": tail,
+            "logs": [
+                f"2025-12-01T10:00:0{i}Z [{container_name}] mock log line {i + 1}"
+                for i in range(min(tail, 5))
+            ],
+        }
+
     async def container_stats(self, container_id: str) -> dict:
         """Return resource usage statistics for a single container.
 

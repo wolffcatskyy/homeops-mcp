@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     MCP_ADMIN_KEY: str = "changeme"
     EMBY_URL: str | None = None
     EMBY_API_KEY: str | None = None
+    CROWDSEC_URL: str | None = None
+    CROWDSEC_API_KEY: str | None = None
     DOCKER_SOCKET: str = "unix:///var/run/docker.sock"
     LOG_LEVEL: str = "INFO"
 
